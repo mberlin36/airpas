@@ -112,3 +112,22 @@ ui/airpas/
     shared/      # services, signal stores, models, shared components
     style/       # global SCSS theme + component style mixins
 ```
+
+## Development details
+### AI
+
+During the development of this app GitHub Copilot was used to assist. My idea on using AI is like an intern, it should not be trusted to just go off with vague ideas and build but rather to follow structured tasks. I defined a pattern for the feature (i.e. an API route, a UI view signalStore service flow), and for each element that needed it AI would implement/copy the pattern for the model or page.
+
+The processing function of this app is mocked rather than using a live AI. In a real project the first step would be to figure out which AI performs text extraction best, then compare to expected cost. The other aspect to the AI processing would be need, if a PDF is uploaded it may be more successful to extract the text from the document and then use AI to organize the data into the correct fields/structures. This could result in lower cost and faster processing.
+
+AI was also used to take a pass at this file for organization and spelling/grammer correction. 
+
+### Future considerations
+
+If this project was to be deployed the following would need to be adjusted:
+
+1. Role/auth, this project uses a basic admin flag on the user table. A better way to do it would be with a role table and relation, this would also help with a proper auth guard for app section access. The user would also get a password field that can be used to log in. The auth flow could be a simple OAuth bearer token.
+2. Visual design, this app uses basic scss mixins that result in a less than ideal look. A proper visual pass would do a lot of good.
+3. Logging, there is no logging in this app, logs can be added to track every step and change in the receipt from step to step.
+4. Cloud, this app is not hosted by any means, a terraform file with S3/cloud file storage for original uploaded files would make it better.
+5. A mobile app component for taking pics of the receipt in question so an employee does not have to create the receipt file then upload. 
