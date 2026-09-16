@@ -44,11 +44,57 @@ Any time you pull changes that include a new file under `api/alembic/versions/`,
 
 ## Using the app
 
-1. Open http://localhost:4200 — you'll land on the login page.
-2. Login is a simple mock: enter the email of an existing user in the database. There's no password; the app looks up the user by email and routes you based on their role (`is_admin` → manager view, otherwise → employee view).
-3. Since the database starts empty, create a user first via the API docs (http://localhost:8000/docs) using `POST /api/users/`, setting `is_admin: true` for a manager or `false` for an employee, then log in with that email.
-4. As an employee: use **New Submission** to upload a receipt (PDF/image) and pick a reviewing manager. Open the submission to run **Process with AI** (mock extraction), edit the extracted vendor/line items, then **Submit for Review**.
-5. As a manager: open a submitted task to **Approve** or **Reject** (rejecting requires review notes).
+The database starts empty and there's no signup flow, so the first thing you need to do is create some users directly through the API's Swagger docs.
+
+### 1. Create your first users via Swagger
+
+1. With the stack running, open http://localhost:8000/docs.
+2. Expand **Users** → `POST /api/users/`, click **Try it out**.
+3. Create at least one manager (approver) and one employee (submitter). Example request bodies:
+
+   Manager:
+   ```json
+   {
+     "first_name": "Ada",
+     "last_name": "Manager",
+     "email": "ada@example.com",
+     "is_admin": true
+   }
+   ```
+
+   Employee:
+   ```json
+   {
+     "first_name": "Sam",
+     "last_name": "Employee",
+     "email": "sam@example.com",
+     "is_admin": false
+   }
+   ```
+4. Click **Execute** for each. The response body includes the new user's `id` — you won't need it for login, but it's useful if you want to inspect data later via `GET /api/users/` or `GET /api/receipts/`.
+
+`is_admin` is what determines routing after login: `true` lands on the manager (task review) view, `false` lands on the employee (submissions) view.
+
+### 2. Log in
+
+1. Open http://localhost:4200 (you should land on `/login`).
+2. Enter the **email** of one of the users you just created — there's no password, login is just an email lookup.
+3. You'll be routed automatically based on that user's `is_admin` flag: employees go to `/employee`, managers go to `/manager`.
+
+### 3. Walk through the workflow
+
+As the **employee**:
+
+1. On the submissions list, click **New Submission**.
+2. Choose a receipt file (PDF or image) and pick a reviewer from the dropdown (populated from your admin/manager users).
+3. Submit the dialog — this creates the receipt and uploads the file (status starts as `uploaded`).
+4. Click the new row to open it in the side panel, then click **Process with AI** to run the mock extraction (status moves to `review`, with a vendor name and line items filled in).
+5. Edit the vendor/line items if needed, then click **Submit for Review** (status moves to `submitted`).
+
+As the **manager** (log out and log back in with the manager's email, or open a second browser session):
+
+1. On the tasks list, click the row for the receipt that was just submitted.
+2. Review the vendor/line items/files, add review notes, then click **Approve** or **Reject**. Rejecting requires review notes to be filled in.
 
 ## Common commands
 
