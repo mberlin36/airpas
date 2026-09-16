@@ -1,0 +1,17 @@
+@use '@angular/material' as mat;
+
+@mixin form-theme($theme) {
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    mat-form-field {
+      width: 100%;
+      input {
+        width: 100%;
+        min-height: auto;
+      }
+    }
+  }
+}

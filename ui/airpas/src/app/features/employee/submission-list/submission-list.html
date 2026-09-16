@@ -1,0 +1,48 @@
+<mat-sidenav-container class="submission-list-layout">
+  <mat-sidenav mode="over" position="end" [opened]="selectedReceiptId() !== null" (closed)="closeDetail()">
+    @if (selectedReceiptId(); as receiptId) {
+      <app-submission
+        [id]="receiptId"
+        (closeRequested)="closeDetail()"
+        (submissionUpdated)="store.listSubmissions()"
+      ></app-submission>
+    }
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="submission-list-container list-container">
+      <app-page-header title="My Submissions" [highlights]="highlights()"></app-page-header>
+
+      <div class="submission-list-actions">
+        <button matButton="filled" color="primary" type="button" (click)="openUploadDialog()">
+          <mat-icon>add</mat-icon>
+          New Submission
+        </button>
+      </div>
+
+      @if (store.isLoading()) {
+        <p>Loading submissions...</p>
+      }
+
+      @if (store.isError()) {
+        <p>Error loading submissions.</p>
+      } @else {
+        @if (store.submissions().length > 0) {
+          <app-submission-table
+            [dataSource]="dataSource"
+            [displayedColumns]="displayColumns"
+            [length]="store.totalData()"
+            [pageSizes]="pageSizes"
+            [pageSize]="store.limit()"
+            [pageIndex]="store.pageIndex()"
+            (pageChanged)="store.loadPage($event)"
+            (rowClicked)="rowClick($event)"
+            (sortChanged)="sortChanged($event)"
+          ></app-submission-table>
+        } @else {
+          <p>No submissions found.</p>
+        }
+      }
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

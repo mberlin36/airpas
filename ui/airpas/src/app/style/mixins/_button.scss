@@ -1,0 +1,11 @@
+// use shortened path names configured in the angular.json file for imports
+@use '@angular/material' as mat;
+
+@mixin button-theme($theme) {
+  .default-button {
+    width: auto;
+    min-width: 200px;
+    height: auto;
+    min-height: 36px;
+  }
+}

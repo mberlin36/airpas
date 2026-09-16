@@ -1,0 +1,117 @@
+<div class="submission-detail">
+  <div class="submission-detail-header">
+    <h2>Submission Details</h2>
+    <button matIconButton type="button" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (receipt(); as r) {
+    <span class="submission-status-badge" [class]="'status-' + r.status">{{ r.status }}</span>
+
+    @if (errorMessage()) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+    }
+
+    @if (r.status === 'uploaded') {
+      <p>This receipt hasn't been processed yet. Run it through the AI extraction service to fill in the vendor and line item details.</p>
+      <button matButton="filled" color="primary" type="button" [disabled]="isProcessing()" (click)="processReceipt()">
+        <mat-icon>auto_awesome</mat-icon>
+        {{ isProcessing() ? 'Processing...' : 'Process with AI' }}
+      </button>
+    } @else if (r.status === 'review') {
+      <form [formGroup]="form" class="submission-edit-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Vendor</mat-label>
+          <input matInput formControlName="vendorName" />
+        </mat-form-field>
+
+        <h3>Line Items</h3>
+        <div class="submission-edit-lines">
+          @for (line of lines.controls; track line; let i = $index) {
+            <div [formGroup]="line" class="submission-edit-line">
+              <mat-form-field appearance="outline">
+                <mat-label>Item</mat-label>
+                <input matInput formControlName="item" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Value</mat-label>
+                <input matInput type="number" formControlName="value" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Note</mat-label>
+                <input matInput formControlName="note" />
+              </mat-form-field>
+              <button matIconButton type="button" (click)="removeLine(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+        <button matButton type="button" (click)="addLine()">
+          <mat-icon>add</mat-icon>
+          Add Line
+        </button>
+
+        <div class="submission-edit-actions">
+          <button matButton type="button" [disabled]="isSaving() || form.invalid" (click)="saveChanges()">Save Changes</button>
+          <button
+            matButton="filled"
+            color="primary"
+            type="button"
+            [disabled]="isSaving() || form.invalid"
+            (click)="submitForReview()"
+          >
+            Submit for Review
+          </button>
+        </div>
+      </form>
+    } @else {
+      <dl class="submission-detail-fields">
+        <dt>Vendor</dt>
+        <dd>{{ r.vendor_name }}</dd>
+
+        <dt>Review Notes</dt>
+        <dd>{{ r.notes || '--' }}</dd>
+
+        <dt>Submitted</dt>
+        <dd>{{ r.created_at | date: 'short' }}</dd>
+      </dl>
+
+      <h3>Line Items</h3>
+      @if (r.receipt_lines.length > 0) {
+        <table class="submission-detail-lines">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Value</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (line of r.receipt_lines; track line.id) {
+              <tr>
+                <td>{{ line.item }}</td>
+                <td>{{ line.value | currency }}</td>
+                <td>{{ line.note || '--' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p>No line items yet.</p>
+      }
+    }
+
+    @if (r.files.length > 0) {
+      <h3>Files</h3>
+      <ul class="submission-detail-files">
+        @for (file of r.files; track file.id) {
+          <li><a [href]="file.url" target="_blank" rel="noopener">{{ file.name }}</a></li>
+        }
+      </ul>
+    }
+  }
+</div>

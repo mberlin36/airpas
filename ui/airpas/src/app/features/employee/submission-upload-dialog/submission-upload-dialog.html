@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>New Submission</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="submission-upload-form">
+    <div class="file-picker">
+      <input type="file" accept="application/pdf,image/*" (change)="onFileSelected($event)" #fileInput hidden />
+      <button matButton="outlined" type="button" (click)="fileInput.click()">
+        <mat-icon>attach_file</mat-icon>
+        {{ selectedFile() ? selectedFile()!.name : 'Choose Receipt File' }}
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Reviewer</mat-label>
+      <mat-select formControlName="reviewerId">
+        @for (admin of admins(); track admin.id) {
+          <mat-option [value]="admin.id">{{ admin.first_name }} {{ admin.last_name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+    }
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button matButton type="button" (click)="cancel()">Cancel</button>
+  <button
+    matButton="filled"
+    color="primary"
+    type="button"
+    [disabled]="!selectedFile() || form.invalid || isSubmitting()"
+    (click)="submit()"
+  >
+    Submit
+  </button>
+</mat-dialog-actions>

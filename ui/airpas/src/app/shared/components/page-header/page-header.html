@@ -1,0 +1,25 @@
+<div class="page-header-container">
+  <div class="page-header-title">
+    <h1>{{ title() }}</h1>
+  </div>
+  @if (highlights()) {
+    <div class="page-header-highlights">
+      @for (highlight of highlights(); track highlight.title) {
+        <mat-card
+          class="page-header-highlight"
+          [class.info-highlight]="highlight.level === 'info'"
+          [class.warning-highlight]="highlight.level === 'warning'"
+          [class.error-highlight]="highlight.level === 'error'"
+        >
+          <mat-card-header>
+            <span class="page-header-highlight-title">{{ highlight.title }}</span>
+          </mat-card-header>
+          <mat-card-content>
+            <span class="page-header-highlight-value">{{ highlight.value }}</span>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  }
+  <mat-divider class="page-header-divider"></mat-divider>
+</div>

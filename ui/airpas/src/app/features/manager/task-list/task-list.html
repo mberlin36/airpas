@@ -1,0 +1,37 @@
+<mat-sidenav-container class="task-list-layout">
+  <mat-sidenav mode="over" position="end" [opened]="selectedReceiptId() !== null" (closed)="closeDetail()">
+    @if (selectedReceiptId(); as receiptId) {
+      <app-task [id]="receiptId" (closeRequested)="closeDetail()" (taskUpdated)="store.listTasks()"></app-task>
+    }
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="task-list-container list-container">
+      <app-page-header title="Tasks" [highlights]="highlights()"></app-page-header>
+
+      @if (store.isLoading()) {
+        <p>Loading tasks...</p>
+      }
+
+      @if (store.isError()) {
+        <p>Error loading tasks.</p>
+      } @else {
+        @if (store.tasks().length > 0) {
+          <app-task-table
+            [dataSource]="dataSource"
+            [displayedColumns]="displayColumns"
+            [length]="store.totalData()"
+            [pageSizes]="pageSizes"
+            [pageSize]="store.limit()"
+            [pageIndex]="store.pageIndex()"
+            (pageChanged)="store.loadPage($event)"
+            (rowClicked)="rowClick($event)"
+            (sortChanged)="sortChanged($event)"
+          ></app-task-table>
+        } @else {
+          <p>No tasks found.</p>
+        }
+      }
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

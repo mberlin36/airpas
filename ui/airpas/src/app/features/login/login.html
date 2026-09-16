@@ -1,0 +1,25 @@
+<div class="login-container">
+  <div class="logo-container">
+    <mat-icon>person</mat-icon>
+  </div>
+  <div class="form-container">
+    <form [formGroup]="loginForm" (ngSubmit)="$event.preventDefault(); logIn()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="username" type="email" placeholder="email" />
+        <mat-icon matPrefix>email</mat-icon>
+      </mat-form-field>
+      @if (usersStore.isError()) {
+        <mat-error class="login-error">Could not log you in with those credentials.</mat-error>
+      }
+      <button
+        matButton="filled"
+        color="primary"
+        type="submit"
+        class="login-button default-button form-button"
+      >
+        Login
+      </button>
+    </form>
+  </div>
+</div>

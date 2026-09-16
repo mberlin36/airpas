@@ -1,0 +1,84 @@
+<div class="task-detail">
+  <div class="task-detail-header">
+    <h2>Task Details</h2>
+    <button matIconButton type="button" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else if (receipt(); as r) {
+    <span class="task-status-badge" [class]="'status-' + r.status">{{ r.status }}</span>
+
+    @if (errorMessage()) {
+      <mat-error>{{ errorMessage() }}</mat-error>
+    }
+
+    <dl class="task-detail-fields">
+      <dt>Vendor</dt>
+      <dd>{{ r.vendor_name }}</dd>
+
+      <dt>Submitted</dt>
+      <dd>{{ r.updated_at | date: 'short' }}</dd>
+    </dl>
+
+    <h3>Line Items</h3>
+    @if (r.receipt_lines.length > 0) {
+      <table class="task-detail-lines">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Value</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (line of r.receipt_lines; track line.id) {
+            <tr>
+              <td>{{ line.item }}</td>
+              <td>{{ line.value | currency }}</td>
+              <td>{{ line.note || '--' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p>No line items.</p>
+    }
+
+    @if (r.files.length > 0) {
+      <h3>Files</h3>
+      <ul class="task-detail-files">
+        @for (file of r.files; track file.id) {
+          <li><a [href]="file.url" target="_blank" rel="noopener">{{ file.name }}</a></li>
+        }
+      </ul>
+    }
+
+    @if (r.status === 'submitted') {
+      <form [formGroup]="reviewForm" class="task-review-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Review Notes</mat-label>
+          <textarea matInput formControlName="notes" rows="3" placeholder="Required when rejecting"></textarea>
+        </mat-form-field>
+      </form>
+
+      <div class="task-detail-actions">
+        <button matButton color="warn" type="button" [disabled]="isSaving()" (click)="decide('rejected')">
+          <mat-icon>close</mat-icon>
+          Reject
+        </button>
+        <button matButton="filled" color="primary" type="button" [disabled]="isSaving()" (click)="decide('approved')">
+          <mat-icon>check</mat-icon>
+          Approve
+        </button>
+      </div>
+    } @else if (r.notes) {
+      <dl class="task-detail-fields">
+        <dt>Review Notes</dt>
+        <dd>{{ r.notes }}</dd>
+      </dl>
+    }
+  }
+</div>

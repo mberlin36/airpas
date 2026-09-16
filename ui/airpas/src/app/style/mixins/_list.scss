@@ -1,0 +1,50 @@
+@use '@angular/material' as mat;
+@use 'layout' as layout;
+
+@mixin list-theme($theme) {
+  .list-container {
+    width: 100%;
+    padding: 0 24px;
+
+    .table-scroll-region {
+      height: 65vh;
+      overflow-y: auto;
+      overflow-x: auto;
+
+      table {
+        min-width: 100%;
+      }
+
+      .mat-mdc-header-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+      }
+    }
+  }
+  .table-container {
+    border-radius: 24px;
+    overflow: hidden;
+
+    tr:nth-child(odd) {
+      background-color: white;
+    }
+
+    .mat-mdc-header-row {
+      background-color: lightgray !important;
+    }
+
+    .mat-mdc-paginator {
+      border-top: 1px solid;
+      background-color: lightgray !important;
+    }
+
+    .mat-column-position {
+      width: 1%;
+      white-space: nowrap;
+      padding-left: 8px;
+      padding-right: 8px;
+      text-align: right;
+    }
+  }
+}

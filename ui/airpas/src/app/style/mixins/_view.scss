@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+@use 'layout' as layout;
+
+@mixin view-theme($theme) {
+  .cpf-divider {
+    border-top: 2px solid;
+  }
+
+  .view-container {
+    width: 100%;
+    padding: 0 24px;
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+    }
+
+    mat-card-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px 16px 16px;
+    }
+
+    .view-content {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: scroll;
+
+      .related-items {
+        display: flex;
+        gap: 24px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding-bottom: 16px;
+
+        * {
+          flex-grow: 1;
+        }
+      }
+    }
+  }
+}

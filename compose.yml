@@ -1,0 +1,68 @@
+name: "AI Receipt Processing & Approval System"
+
+volumes:
+  pgdata:
+  ui_node_modules:
+  api_venv:
+
+networks:
+  data:
+
+services:
+  db:
+    container_name: db
+    image: postgres:17
+    platform: linux/amd64
+    restart: always
+    environment:
+      POSTGRES_DB: airpas
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "5432:5432"
+    networks:
+      - data
+    healthcheck:
+      test: pg_isready -U test -d airpas
+      interval: 5s
+      start_period: 60s
+      timeout: 3s
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: always
+    env_file:
+      - ./api/dev.env
+    ports:
+      - "8000:8000"
+    command: uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - data
+    volumes:
+      - ./api:/app
+      - api_venv:/app/.venv
+
+  ui:
+    container_name: ui
+    build:
+      context: ./ui/airpas
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "4200:4200"
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - data
+    volumes:
+      - ./ui/airpas:/app
+      - ui_node_modules:/app/node_modules
