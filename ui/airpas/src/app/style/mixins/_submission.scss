@@ -94,6 +94,15 @@
     gap: 0.5rem;
   }
 
+  .submission-edit-totals {
+    display: flex;
+    gap: 0.5rem;
+
+    mat-form-field {
+      flex: 1;
+    }
+  }
+
   .submission-edit-lines {
     display: flex;
     flex-direction: column;

@@ -96,67 +96,6 @@ As the **manager** (log out and log back in with the manager's email, or open a 
 1. On the tasks list, click the row for the receipt that was just submitted.
 2. Review the vendor/line items/files, add review notes, then click **Approve** or **Reject**. Rejecting requires review notes to be filled in.
 
-## Common commands
-
-Stop the stack:
-
-```bash
-docker compose down
-```
-
-Rebuild after dependency changes (`pyproject.toml`/`uv.lock` or `package.json`):
-
-```bash
-docker compose up --build
-```
-
-Tail logs for a single service:
-
-```bash
-docker compose logs -f api   # or ui / db
-```
-
-Open a shell in a running container:
-
-```bash
-docker compose exec api bash
-docker compose exec ui sh
-```
-
-Generate a new Alembic migration after changing a model in `api/airpas/models/`:
-
-```bash
-docker compose exec api uv run alembic revision --autogenerate -m "describe the change"
-docker compose exec api uv run alembic upgrade head
-```
-
-## Running without Docker
-
-### API
-
-Requires [uv](https://docs.astral.sh/uv/) and Python 3.13+, plus a Postgres instance reachable from your machine.
-
-```bash
-cd api
-uv sync
-DATABASE_URL="postgresql://test:test@localhost:5432/airpas" uv run alembic upgrade head
-DATABASE_URL="postgresql://test:test@localhost:5432/airpas" uv run uvicorn main:app --reload
-```
-
-Note: `api/dev.env` sets `DATABASE_URL` to use the Docker Compose service name `db` as the host, which only resolves inside the Compose network. When running the API directly on your host (against a Postgres exposed on `localhost:5432`, e.g. via `docker compose up db`), override `DATABASE_URL` as shown above instead of relying on `dev.env`.
-
-### UI
-
-Requires Node 20+.
-
-```bash
-cd ui/airpas
-npm install
-npm start
-```
-
-The dev server proxies `/api/*` requests to `http://api:8000` (see `ui/airpas/proxy.conf.json`), which assumes the API is reachable via Docker Compose. If running the API outside Docker, update the proxy target to `http://localhost:8000`.
-
 ## Project structure
 
 ```

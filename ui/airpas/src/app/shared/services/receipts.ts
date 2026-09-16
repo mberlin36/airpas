@@ -27,6 +27,9 @@ export interface ApiReceipt {
   notes: string | null;
   submitter_id: string;
   reviewer_id: string | null;
+  total_amount: number;
+  currency: string;
+  tax: number;
   status: ReceiptStatus;
   created_at: string;
   updated_at: string;
@@ -61,6 +64,9 @@ export interface ReceiptUpdateParams {
   vendor_name?: string;
   notes?: string | null;
   reviewer_id?: string;
+  total_amount?: number;
+  currency?: string;
+  tax?: number;
   status?: ReceiptStatus;
 }
 

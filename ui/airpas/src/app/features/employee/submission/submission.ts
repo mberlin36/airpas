@@ -39,6 +39,9 @@ export class Submission {
 
   form = this.fb.group({
     vendorName: ['', Validators.required],
+    totalAmount: [0, [Validators.required, Validators.min(0)]],
+    currency: ['', Validators.required],
+    tax: [0, [Validators.required, Validators.min(0)]],
     lines: this.fb.array<ReturnType<typeof this.buildLineGroup>>([]),
   });
 
@@ -71,7 +74,12 @@ export class Submission {
         'lines',
         this.fb.array(receipt.receipt_lines.map((line) => this.buildLineGroup(line))),
       );
-      this.form.patchValue({ vendorName: receipt.vendor_name });
+      this.form.patchValue({
+        vendorName: receipt.vendor_name,
+        totalAmount: receipt.total_amount,
+        currency: receipt.currency,
+        tax: receipt.tax,
+      });
     } finally {
       this.isLoading.set(false);
     }
@@ -117,8 +125,13 @@ export class Submission {
     this.isSaving.set(true);
     this.errorMessage.set(null);
     try {
-      const { vendorName } = this.form.getRawValue();
-      await this.receiptsService.update(receipt.id, { vendor_name: vendorName ?? '' });
+      const { vendorName, totalAmount, currency, tax } = this.form.getRawValue();
+      await this.receiptsService.update(receipt.id, {
+        vendor_name: vendorName ?? '',
+        total_amount: totalAmount ?? 0,
+        currency: currency ?? '',
+        tax: tax ?? 0,
+      });
 
       const originalLineIds = new Set(receipt.receipt_lines.map((line) => line.id));
       const currentLineIds = new Set<string>();

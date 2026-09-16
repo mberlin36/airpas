@@ -24,11 +24,15 @@ class ExtractedReceiptData(BaseModel):
     """Structured data shaped like the Receipt/ReceiptLine tables, as returned by the AI service."""
 
     vendor_name: str
+    total_amount: float
+    currency: str
+    tax: float
     receipt_lines: List[ReceiptLineNestedCreate]
 
 
-# Mock vendor pool and lorem-ipsum word pool used to simulate varied AI OCR responses.
+# Mock vendor/currency pools and lorem-ipsum word pool used to simulate varied AI OCR responses.
 _MOCK_VENDORS = ["Office Depot", "Home Depot", "Staples", "Costco", "Best Buy"]
+_MOCK_CURRENCIES = ["USD", "EUR", "GBP", "CAD"]
 _LOREM_WORDS = [
     "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing", "elit",
     "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore",
@@ -54,8 +58,13 @@ def mock_extract_receipt_data(file: File) -> ExtractedReceiptData:
         ReceiptLineNestedCreate(item=_mock_item_name(), value=round(random.uniform(1.50, 2000), 2), note=None)
         for _ in range(line_count)
     ]
+    total_amount = round(sum(line.value for line in lines), 2)
+    tax = round(total_amount * random.uniform(0.05, 0.10), 2)
     return ExtractedReceiptData(
         vendor_name=random.choice(_MOCK_VENDORS),
+        total_amount=total_amount,
+        currency=random.choice(_MOCK_CURRENCIES),
+        tax=tax,
         receipt_lines=lines,
     )
 
@@ -83,8 +92,14 @@ class ReceiptProcessingService:
 
         extracted = mock_extract_receipt_data(file)
 
-        # notes is reserved for the manager's review comments, so only vendor_name is applied here.
-        receipt.set_attributes(force=True, vendor_name=extracted.vendor_name)
+        # notes is reserved for the manager's review comments, so only these fields are applied here.
+        receipt.set_attributes(
+            force=True,
+            vendor_name=extracted.vendor_name,
+            total_amount=extracted.total_amount,
+            currency=extracted.currency,
+            tax=extracted.tax,
+        )
         receipt.set_attribute("status", ReceiptStatus.REVIEW, force=True)
         receipt.save()
 

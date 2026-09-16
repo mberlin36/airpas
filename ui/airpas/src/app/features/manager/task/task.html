@@ -19,6 +19,12 @@
       <dt>Vendor</dt>
       <dd>{{ r.vendor_name }}</dd>
 
+      <dt>Total Amount</dt>
+      <dd>{{ r.total_amount | currency: r.currency }}</dd>
+
+      <dt>Tax</dt>
+      <dd>{{ r.tax | currency: r.currency }}</dd>
+
       <dt>Submitted</dt>
       <dd>{{ r.updated_at | date: 'short' }}</dd>
     </dl>

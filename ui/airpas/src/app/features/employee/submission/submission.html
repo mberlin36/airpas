@@ -28,6 +28,21 @@
           <input matInput formControlName="vendorName" />
         </mat-form-field>
 
+        <div class="submission-edit-totals">
+          <mat-form-field appearance="outline">
+            <mat-label>Total Amount</mat-label>
+            <input matInput type="number" formControlName="totalAmount" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Currency</mat-label>
+            <input matInput formControlName="currency" />
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Tax</mat-label>
+            <input matInput type="number" formControlName="tax" />
+          </mat-form-field>
+        </div>
+
         <h3>Line Items</h3>
         <div class="submission-edit-lines">
           @for (line of lines.controls; track line; let i = $index) {
@@ -72,6 +87,12 @@
       <dl class="submission-detail-fields">
         <dt>Vendor</dt>
         <dd>{{ r.vendor_name }}</dd>
+
+        <dt>Total Amount</dt>
+        <dd>{{ r.total_amount | currency: r.currency }}</dd>
+
+        <dt>Tax</dt>
+        <dd>{{ r.tax | currency: r.currency }}</dd>
 
         <dt>Review Notes</dt>
         <dd>{{ r.notes || '--' }}</dd>
